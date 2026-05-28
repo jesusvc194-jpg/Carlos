@@ -1,230 +1,160 @@
--- TIENDA FALSA COMPLETA + REGALAR JUGADORES (Delta Celular)
-local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- === TIENDA REAL + 1,000,235 ROBUX FALSO + DESCuento ===
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-for _, v in pairs(playerGui:GetChildren()) do
-    if v.Name == "TiendaRealBrainrot" then v:Destroy() end
+local Robux = 1000235  -- Robux falso
+local AUTO_BUY = true
+
+print("✅ Script cargado - Robux: 1,000,235")
+
+local function notify(title, text)
+    game.StarterGui:SetCore("SendNotification", {Title = title, Text = text, Duration = 5})
 end
 
+-- Actualizar Robux visual
+local function updateRobux()
+    for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+        if gui:IsA("TextLabel") and (gui.Text:find("R$") or gui.Text:find("Robux") or gui.Text:find("%d+")) then
+            if gui.Text:find("%d") then
+                gui.Text = gui.Text:gsub("%d+", Robux)
+            end
+        end
+    end
+end
+
+spawn(function()
+    while wait(1) do
+        updateRobux()
+    end
+end)
+
+-- Auto Buy Tienda Real
+spawn(function()
+    while AUTO_BUY do
+        wait(0.7)
+        local char = LocalPlayer.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then continue end
+        local root = char.HumanoidRootPart
+
+        for _, obj in pairs(workspace:GetDescendants()) do
+            local name = obj.Name:lower()
+            if (name:find("buy") or name:find("purchase") or name:find("comprar") or name:find("button")) then
+                if (obj:IsA("Part") or obj:IsA("MeshPart")) then
+                    local dist = (obj.Position - root.Position).Magnitude
+                    if dist < 25 then
+                        firetouchinterest(root, obj, 0)
+                        wait(0.1)
+                        firetouchinterest(root, obj, 1)
+                        notify("🛒 Comprando", "Item comprado")
+                        wait(1.3)
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- GUI Principal
 local sg = Instance.new("ScreenGui")
-sg.Name = "TiendaRealBrainrot"
-sg.ResetOnSpawn = false
-sg.Parent = playerGui
+sg.Parent = LocalPlayer.PlayerGui
 
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0.96, 0, 0.88, 0)
-main.Position = UDim2.new(0.02, 0, 0.06, 0)
-main.BackgroundColor3 = Color3.fromRGB(20, 20, 32)
-main.Parent = sg
-
--- Top Bar
-local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1,0,0.09,0)
-topBar.BackgroundColor3 = Color3.fromRGB(0, 140, 255)
-topBar.Parent = main
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.42,0,0.58,0)
+frame.Position = UDim2.new(0.29,0,0.21,0)
+frame.BackgroundColor3 = Color3.fromRGB(18,18,30)
+frame.Parent = sg
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(0.75,0,1,0)
-title.BackgroundTransparency = 1
-title.Text = "TIENDA"
+title.Size = UDim2.new(1,0,0.14,0)
+title.BackgroundColor3 = Color3.fromRGB(0,110,255)
+title.Text = "🛒 TIENDA REAL"
 title.TextColor3 = Color3.new(1,1,1)
 title.TextScaled = true
-title.Font = Enum.Font.GothamBold
-title.Parent = topBar
+title.Parent = frame
 
-local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0.1,0,0.8,0)
-closeBtn.Position = UDim2.new(0.88,0,0.1,0)
-closeBtn.BackgroundColor3 = Color3.fromRGB(200,0,0)
-closeBtn.Text = "X"
-closeBtn.TextColor3 = Color3.new(1,1,1)
-closeBtn.TextScaled = true
-closeBtn.Parent = topBar
-closeBtn.MouseButton1Click:Connect(function() sg:Destroy() end)
+local robuxLabel = Instance.new("TextLabel")
+robuxLabel.Size = UDim2.new(0.9,0,0.1,0)
+robuxLabel.Position = UDim2.new(0.05,0,0.16,0)
+robuxLabel.BackgroundTransparency = 1
+robuxLabel.Text = "Robux: 1,000,235"
+robuxLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+robuxLabel.TextScaled = true
+robuxLabel.Parent = frame
 
--- Tabs
-local tabFrame = Instance.new("Frame")
-tabFrame.Size = UDim2.new(1,0,0.07,0)
-tabFrame.Position = UDim2.new(0,0,0.09,0)
-tabFrame.BackgroundColor3 = Color3.fromRGB(30,30,45)
-tabFrame.Parent = main
+-- Botones
+local buyBtn = Instance.new("TextButton")
+buyBtn.Size = UDim2.new(0.9,0,0.11,0)
+buyBtn.Position = UDim2.new(0.05,0,0.3,0)
+buyBtn.BackgroundColor3 = Color3.fromRGB(0,170,0)
+buyBtn.Text = "Auto Buy: ON"
+buyBtn.TextColor3 = Color3.new(1,1,1)
+buyBtn.TextScaled = true
+buyBtn.Parent = frame
 
-local function createTab(text, x)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.333,0,1,0)
-    btn.Position = UDim2.new(x,0,0,0)
-    btn.BackgroundColor3 = Color3.fromRGB(40,40,55)
-    btn.Text = text
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.TextScaled = true
-    btn.Parent = tabFrame
-    return btn
-end
+buyBtn.MouseButton1Click:Connect(function()
+    AUTO_BUY = not AUTO_BUY
+    buyBtn.Text = "Auto Buy: " .. (AUTO_BUY and "ON" or "OFF")
+end)
 
-local tabEng = createTab("ENGRAJE", 0)
-local tabPases = createTab("PASES DE JUEGO", 0.333)
-local tabDinero = createTab("DINERO", 0.666)
-
--- Contenido
-local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1,0,0.8,0)
-scroll.Position = UDim2.new(0,0,0.16,0)
-scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 8
-scroll.CanvasSize = UDim2.new(0,0,0,900)
-scroll.Parent = main
-
-local grid = Instance.new("UIGridLayout")
-grid.CellSize = UDim2.new(0.48,0,0.34,0)
-grid.CellPadding = UDim2.new(0,10,0,10)
-grid.Parent = scroll
-
-local function loadItems(category)
-    scroll:ClearAllChildren()
-    grid.Parent = scroll
-
-    local list = {}
-    if category == "ENGRAJE" then
-        list = {
-            {emoji="🔨", name="Martillo de Ban", desc="Elimina a los jugadores...", price="1499"},
-            {emoji="🖐️", name="Golpe de Agujero Negro", desc="Tira, sujeta y empuja...", price="199"},
-            {emoji="🔫", name="Pistola Láser", desc="Lanza láseres...", price="749"},
-            {emoji="🌈", name="Alfombra Voladora", desc="¡Te permite volar!", price="375"}
-        }
-    elseif category == "PASES" then
-        list = {
-            {emoji="💰", name="2x Dinero", desc="Gana el doble permanentemente", price="169"},
-            {emoji="⭐", name="VIP", desc="Muchos beneficios", price="279"},
-            {emoji="👑", name="Admin Panel", desc="Comandos de administrador", price="5599"}
-        }
-    elseif category == "DINERO" then
-        list = {
-            {emoji="💵", name="$1.300.000", desc="Paquete pequeño", price="369"},
-            {emoji="💰", name="$6.500.000", desc="Paquete grande", price="699"},
-            {emoji="🤑", name="$13.000.000", desc="Mega paquete", price="1399"}
-        }
-    end
-
-    for _, item in ipairs(list) do
-        local card = Instance.new("Frame")
-        card.BackgroundColor3 = Color3.fromRGB(28,28,40)
-        card.Parent = scroll
-
-        local icon = Instance.new("TextLabel")
-        icon.Size = UDim2.new(0.25,0,0.35,0)
-        icon.Position = UDim2.new(0.05,0,0.08,0)
-        icon.BackgroundTransparency = 1
-        icon.Text = item.emoji
-        icon.TextScaled = true
-        icon.Parent = card
-
-        local name = Instance.new("TextLabel")
-        name.Size = UDim2.new(0.7,0,0.22,0)
-        name.Position = UDim2.new(0.32,0,0.08,0)
-        name.Text = item.name
-        name.TextColor3 = Color3.new(1,1,1)
-        name.TextScaled = true
-        name.TextXAlignment = Enum.TextXAlignment.Left
-        name.BackgroundTransparency = 1
-        name.Parent = card
-
-        local desc = Instance.new("TextLabel")
-        desc.Size = UDim2.new(0.7,0,0.3,0)
-        desc.Position = UDim2.new(0.32,0,0.32,0)
-        desc.Text = item.desc
-        desc.TextColor3 = Color3.fromRGB(170,170,170)
-        desc.TextScaled = true
-        desc.TextXAlignment = Enum.TextXAlignment.Left
-        desc.BackgroundTransparency = 1
-        desc.Parent = card
-
-        local buy = Instance.new("TextButton")
-        buy.Size = UDim2.new(0.6,0,0.25,0)
-        buy.Position = UDim2.new(0.2,0,0.7,0)
-        buy.BackgroundColor3 = Color3.fromRGB(0,170,0)
-        buy.Text = "🪙 "..item.price
-        buy.TextColor3 = Color3.new(1,1,1)
-        buy.TextScaled = true
-        buy.Parent = card
-
-        buy.MouseButton1Click:Connect(function()
-            game.StarterGui:SetCore("SendNotification",{Title="✅ Comprado", Text=item.name, Duration=4})
-        end)
-    end
-end
-
--- Botón Regalar Jugador
 local giftBtn = Instance.new("TextButton")
-giftBtn.Size = UDim2.new(0.4,0,0.06,0)
-giftBtn.Position = UDim2.new(0.3,0,0.94,0)
-giftBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 150)
-giftBtn.Text = "🎁 Regala jugador"
+giftBtn.Size = UDim2.new(0.9,0,0.11,0)
+giftBtn.Position = UDim2.new(0.05,0,0.45,0)
+giftBtn.BackgroundColor3 = Color3.fromRGB(180,50,180)
+giftBtn.Text = "🎁 Regalar Item"
 giftBtn.TextColor3 = Color3.new(1,1,1)
 giftBtn.TextScaled = true
-giftBtn.Parent = main
+giftBtn.Parent = frame
 
 giftBtn.MouseButton1Click:Connect(function()
-    local giftGui = Instance.new("Frame")
-    giftGui.Size = UDim2.new(0.7,0,0.75,0)
-    giftGui.Position = UDim2.new(0.15,0,0.15,0)
-    giftGui.BackgroundColor3 = Color3.fromRGB(20,20,30)
-    giftGui.Parent = sg
+    notify("🎁 Regalar", "Selecciona un jugador")
+    -- Lista de jugadores
+    local list = Instance.new("Frame")
+    list.Size = UDim2.new(0.55,0,0.7,0)
+    list.Position = UDim2.new(0.225,0,0.2,0)
+    list.BackgroundColor3 = Color3.fromRGB(25,25,35)
+    list.Parent = sg
 
-    local gTitle = Instance.new("TextLabel")
-    gTitle.Size = UDim2.new(1,0,0.1,0)
-    gTitle.BackgroundColor3 = Color3.fromRGB(0,140,255)
-    gTitle.Text = "Regalar a jugador"
-    gTitle.TextColor3 = Color3.new(1,1,1)
-    gTitle.TextScaled = true
-    gTitle.Parent = giftGui
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0.1,0,0.1,0)
+    close.Position = UDim2.new(0.88,0,0,0)
+    close.Text = "X"
+    close.BackgroundColor3 = Color3.fromRGB(200,0,0)
+    close.TextColor3 = Color3.new(1,1,1)
+    close.Parent = list
+    close.MouseButton1Click:Connect(function() list:Destroy() end)
 
-    local gClose = Instance.new("TextButton")
-    gClose.Size = UDim2.new(0.15,0,0.1,0)
-    gClose.Position = UDim2.new(0.82,0,0,0)
-    gClose.BackgroundColor3 = Color3.fromRGB(200,0,0)
-    gClose.Text = "X"
-    gClose.TextColor3 = Color3.new(1,1,1)
-    gClose.TextScaled = true
-    gClose.Parent = giftGui
-    gClose.MouseButton1Click:Connect(function() giftGui:Destroy() end)
+    local scroll = Instance.new("ScrollingFrame")
+    scroll.Size = UDim2.new(0.95,0,0.85,0)
+    scroll.Position = UDim2.new(0.025,0,0.12,0)
+    scroll.BackgroundTransparency = 1
+    scroll.Parent = list
 
-    local gScroll = Instance.new("ScrollingFrame")
-    gScroll.Size = UDim2.new(0.95,0,0.8,0)
-    gScroll.Position = UDim2.new(0.025,0,0.12,0)
-    gScroll.BackgroundTransparency = 1
-    gScroll.ScrollBarThickness = 6
-    gScroll.Parent = giftGui
+    local layout = Instance.new("UIListLayout")
+    layout.Parent = scroll
 
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.Padding = UDim.new(0,5)
-    listLayout.Parent = gScroll
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            local b = Instance.new("TextButton")
+            b.Size = UDim2.new(1,0,0,55)
+            b.BackgroundColor3 = Color3.fromRGB(40,40,55)
+            b.Text = "🎁 " .. plr.Name
+            b.TextColor3 = Color3.new(1,1,1)
+            b.TextScaled = true
+            b.Parent = scroll
 
-    for _, plr in ipairs(game.Players:GetPlayers()) do
-        if plr ~= game.Players.LocalPlayer then
-            local pBtn = Instance.new("TextButton")
-            pBtn.Size = UDim2.new(1,0,0,50)
-            pBtn.BackgroundColor3 = Color3.fromRGB(40,40,55)
-            pBtn.Text = "🎁 " .. plr.Name
-            pBtn.TextColor3 = Color3.new(1,1,1)
-            pBtn.TextScaled = true
-            pBtn.Parent = gScroll
-
-            pBtn.MouseButton1Click:Connect(function()
-                game.StarterGui:SetCore("SendNotification",{
-                    Title = "🎁 Regalando...",
-                    Text = "Enviando regalo a " .. plr.Name,
-                    Duration = 5
-                })
-                giftGui:Destroy()
+            b.MouseButton1Click:Connect(function()
+                if Robux >= 100 then
+                    Robux = Robux - 375  -- Ejemplo de costo
+                    robuxLabel.Text = "Robux: " .. Robux
+                    notify("✅ Regalado", "Enviado a " .. plr.Name)
+                else
+                    notify("❌ Sin Robux", "No tienes suficiente")
+                end
+                list:Destroy()
             end)
         end
     end
 end)
 
--- Cargar Engranaje por defecto
-tabEng.MouseButton1Click:Connect(function() loadItems("ENGRAJE") end)
-tabPases.MouseButton1Click:Connect(function() loadItems("PASES") end)
-tabDinero.MouseButton1Click:Connect(function() loadItems("DINERO") end)
-
-loadItems("ENGRAJE")
-
-print("✅ Tienda completa con Regalar cargada")
+notify("Listo", "Tienes 1,000,235 Robux falsos")
+notify("Auto Buy", "Acércate a los items de la tienda")
